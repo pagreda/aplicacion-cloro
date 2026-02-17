@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optimización del Cloro</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #82add7;
+        margin: 0;
+        padding: 15px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+
+    h1 {
+        text-align: center;
+        color: #0f49b4;
+        margin-bottom: 30px;
+        font-size: 1.6rem;
+    }
+
+    /* ===== FORM ===== */
+    .form-row {
+        display: grid;
+        grid-template-columns: 2fr 3fr 1fr 0.8fr;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+
+    .form-row label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    input[type="range"] {
+        width: 100%;
+    }
+
+    input[type="range"].range-verde {
+        accent-color: #2ecc71;
+    }
+
+    input[type="range"].range-verde::-webkit-slider-thumb {
+        background-color: #2ecc71;
+    }
+
+    input[type="range"].range-verde::-moz-range-thumb {
+        background-color: #2ecc71;
+        border: none;
+    }
+
+    input[type="range"].range-naranja {
+        accent-color: #f0a842;
+    }
+
+    input[type="range"].range-naranja::-webkit-slider-thumb {
+        background-color: #f0a842;
+    }
+
+    input[type="range"].range-naranja::-moz-range-thumb {
+        background-color: #f0a842;
+        border: none;
+    }
+
+    input[type="range"].range-amarillo {
+        accent-color: #f2f267;
+    }
+
+    input[type="range"].range-amarillo::-webkit-slider-thumb {
+        background-color: #f2f267;
+    }
+
+    input[type="range"].range-amarillo::-moz-range-thumb {
+        background-color: #f2f267;
+        border: none;
+    }
+
+    input[type="range"].range-gris {
+        accent-color: #b7babf;
+    }
+
+    input[type="range"].range-gris::-webkit-slider-thumb {
+        background-color: #b7babf;
+    }
+
+    input[type="range"].range-gris::-moz-range-thumb {
+        background-color: #b7babf;
+        border: none;
+    }
+
+    input[type="text"] {
+        padding: 6px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f7f7f7;
+        font-weight: bold;
+    }
+
+    .unit {
+        font-size: 0.85rem;
+        color: #555;
+    }
+
+    /* ===== BUTTON ===== */
+    .button-container {
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    button {
+        background-color: #5fa4e5;
+        color: #ffffff;
+        padding: 12px 35px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.05rem;
+        cursor: pointer;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+
+    button:hover {
+        background-color: #163a5c;
+    }
+
+    /* ===== RESULTS ===== */
+    .results {
+        border-top: 2px solid #e0e0e0;
+        padding-top: 20px;
+        margin-top: 20px;
+    }
+
+    .results-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 0.7fr;
+        gap: 10px;
+        margin-bottom: 12px;
+        align-items: center;
+    }
+
+    .results-row span {
+        font-weight: bold;
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 768px) {
+
+        h1 {
+            font-size: 1.4rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .unit {
+            margin-bottom: 5px;
+        }
+
+        .results-row {
+            grid-template-columns: 1fr;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            font-size: 1.1rem;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Optimización del Cloro en la Pre-Potabilización del Agua</h1>
+
+    <p style="text-align: justify; color: #333; line-height: 1.6; margin-bottom: 20px; font-size: 0.7rem;">
+        Un costo considerable en la producción de agua lo constituyen los insumos químicos utilizados en el tratamiento. Se desarrollo un modelo de IA que optimice el suministro de cloro en la etapa de pre tratamiento de la producción de Agua para mantener un Cloro Residual Objetivo cercano a los 0.5 ppm, a la salida de un estanque.
+    </p>
+
+    <div class="form-row">
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" required />
+    </div>
+
+    <div class="form-row">
+        <label for="hora">Hora (24h)</label>
+        <input type="time" id="hora" required />
+    </div>
+
+    <script>
+        // Establecer fecha y hora actual por defecto
+        function setCurrentDateTime() {
+            const now = new Date();
+            
+            // Formato YYYY-MM-DD
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            document.getElementById("fecha").value = `${year}-${month}-${day}`;
+            
+            // Formato HH:MM
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById("hora").value = `${hours}:${minutes}`;
+        }
+        
+        // Ejecutar cuando carga la página
+        window.addEventListener('load', setCurrentDateTime);
+    </script>
+
+    <!-- Dosis de Cloro -->
+    <div class="form-row">
+        <label>Dosis de Cloro</label>
+        <input type="range" id="dosis" min="5.00" max="9.00" step="0.01" value="5.00"
+               oninput="updateValue('dosis', 2)">
+        <input type="text" id="dosis_val" value="5.00" readonly>
+        <div class="unit">ppm</div>
+    </div>
+
+    <!-- Caudal -->
+    <div class="form-row">
+        <label>Caudal</label>
+        <input type="range" id="caudal" class="range-verde" min="5" max="15" step="0.01" value="5.00"
+               oninput="updateValue('caudal', 2)"> 
+        <input type="text" id="caudal_val" value="5.00" readonly>
+        <div class="unit">m³/s</div>
+    </div>
+
+    <!-- ORP -->
+    <div class="form-row">
+        <label>ORP</label>
+        <input type="range" id="orp" class="range-amarillo" min="300" max="400" step="1" value="300"
+               oninput="updateValue('orp', 0)">
+        <input type="text" id="orp_val" value="300" readonly>
+        <div class="unit">mV</div>
+    </div>
+
+    <!-- Turbiedad -->
+    <div class="form-row">
+        <label>Turbiedad</label>
+        <input type="range" id="turbiedad" class="range-naranja" min="5.00" max="100.00" step="0.01" value="5.00"
+               oninput="updateValue('turbiedad', 2)">
+        <input type="text" id="turbiedad_val" value="5.00" readonly>
+        <div class="unit">NTU</div>
+    </div>
+
+
+
+    <!-- pH -->
+    <div class="form-row">
+        <label>pH</label>
+        <input type="range" id="ph" class="range-gris" min="5.00" max="15.00" step="0.01" value="7.00"
+               oninput="updateValue('ph', 2)">
+        <input type="text" id="ph_val" value="7.00" readonly>
+        <div class="unit">pH</div>
+    </div>
+
+    <div class="button-container">
+        <button onclick="calcular()">Calcular</button>
+    </div>
+
+    <div class="results">
+        <div class="results-row">
+            <span>Dosis de Cloro Óptima</span>
+            <span id="dosisOptima">—</span>
+            <div class="unit">ppm</div>
+        </div>
+
+        <div class="results-row">
+            <span>Cloro Residual que se obtendrá (18h)</span>
+            <span id="clOptimo">—</span>
+            <div class="unit">ppm</div>
+        </div>
+
+        <div class="results-row">
+            <span>Cloro Residual estimado</span>
+            <span id="clEstimado">—</span>
+            <div class="unit">ppm</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function updateValue(id, decimals) {
+    const value = parseFloat(document.getElementById(id).value);
+    document.getElementById(id + "_val").value = value.toFixed(decimals);
+}
+</script>
+
+<script>
+async function calcular() {
+
+    // Leer valores desde los input range
+    const data = {
+        dosis_cl: parseFloat(document.getElementById("dosis").value),
+        caudal: parseFloat(document.getElementById("caudal").value),
+        orp: parseInt(document.getElementById("orp").value),
+        turbiedad: parseFloat(document.getElementById("turbiedad").value),
+        ph: parseFloat(document.getElementById("ph").value),
+        fecha: document.getElementById("fecha").value, // YYYY-MM-DD
+        hora: document.getElementById("hora").value    // HH:MM
+    };
+
+    try {
+        // Llamar al backend FastAPI
+        const response = await fetch("http://127.0.0.1:8000/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText);
+        }
+
+
+        const result = await response.json();
+
+       
+        // Resultados del Modelo (API / backend)
+        document.getElementById("dosisOptima").innerText =
+            result.dosis_cl_optima.toFixed(2);
+
+        document.getElementById("clOptimo").innerText =
+            result.cl_predicho_optimo.toFixed(2);
+
+        document.getElementById("clEstimado").innerText =
+            result.cl_predicho_actual.toFixed(2); 
+        
+           
+
+    } catch (error) {
+        alert("Error al calcular: " + error.message);
+        console.error(error);
+    }
+}
+</script>
+
+</body>
+</html>
