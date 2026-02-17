@@ -323,14 +323,30 @@ async function calcular() {
     };
 
     try {
+        
         // Llamar al backend FastAPI
-        const response = await fetch("http://127.0.0.1:8000/predict", {
+        // ==========
+        // MODO LOCAL
+        // ==========
+        //const response = await fetch("http://127.0.0.1:8000/predict", {
+        //    method: "POST",
+        //    headers: {
+        //        "Content-Type": "application/json"
+        //    },
+        //    body: JSON.stringify(data)
+        //});
+
+        // ==========
+        // MODO PRODUCCIÓN (RENDER)
+        // ==========
+        const response = await fetch("/predict", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)
         });
+
 
         if (!response.ok) {
             const errorText = await response.text();

@@ -111,25 +111,43 @@ def predict(data: InputData):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ===============================
-# SERVIR ARCHIVOS ESTÁTICOS
+# SERVIR ARCHIVOS ESTÁTICOS LOCAL
 # ===============================
 # Monta la carpeta 'static' en la raíz
-static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
-if os.path.exists(static_dir):
-    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+#static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+#if os.path.exists(static_dir):
+#    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Ruta raíz que sirve maincloro.html
-@app.get("/")
-async def root():
-    html_file = os.path.join(static_dir, "maincloro.html")
-    if os.path.exists(html_file):
-        return FileResponse(html_file, media_type="text/html")
-    return {"message": "maincloro.html no encontrado"}
+#@app.get("/")
+#async def root():
+#    html_file = os.path.join(static_dir, "maincloro.html")
+#    if os.path.exists(html_file):
+#        return FileResponse(html_file, media_type="text/html")
+#    return {"message": "maincloro.html no encontrado"}
 
 # Ruta alternativa para maincloro.html
-@app.get("/maincloro.html")
-async def get_maincloro():
-    html_file = os.path.join(static_dir, "maincloro.html")
-    if os.path.exists(html_file):
-        return FileResponse(html_file, media_type="text/html")
-    return {"message": "maincloro.html no encontrado"}
+#@app.get("/maincloro.html")
+#async def get_maincloro():
+#    html_file = os.path.join(static_dir, "maincloro.html")
+#    if os.path.exists(html_file):
+#        return FileResponse(html_file, media_type="text/html")
+#    return {"message": "maincloro.html no encontrado"}
+
+# ===============================
+# SERVIR ARCHIVOS ESTÁTICOS RENDER
+# ===============================
+# Obtener la ruta base
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
+# Montar archivos estáticos
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+# Ruta raíz para servir HTML
+@app.get("/")
+async def read_root():
+    html_path = os.path.join(STATIC_DIR, "maincloro.html")
+    if os.path.exists(html_path):
+        return FileResponse(html_path, media_type="text/html")
+    return {"error": "HTML file not found"}
